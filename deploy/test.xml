@@ -1,6 +1,7 @@
 - name: Install and start Nginx on Ubuntu
   hosts: webservers
   become: true
+  gather_facts: true
 
   tasks:
     - name: Update apt cache
@@ -12,8 +13,18 @@
         name: nginx
         state: present
 
-    - name: Ensure nginx is running and enabled
-      service:
+    - name: Check if nginx service exists
+      stat:
+        path: /lib/systemd/system/nginx.service
+      register: nginx_service_file
+
+    - name: Start and enable nginx with systemd
+      systemd:
         name: nginx
         state: started
         enabled: true
+      when: nginx_service_file.stat.exists
+
+    - name: Start nginx manually as fallback
+      command: nginx
+      when: not nginx_service_file.stat.exists
