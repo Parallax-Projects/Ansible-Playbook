@@ -1,6 +1,6 @@
 - name: Install and configure nginx
   hosts: webservers
-  become: true          # important for sudo escalation
+  become: true
 
   tasks:
     - name: Update apt cache
