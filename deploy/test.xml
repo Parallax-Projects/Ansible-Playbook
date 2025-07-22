@@ -14,7 +14,6 @@
         name: nginx
         state: latest
         update_cache: yes
-        force: yes
 
     - name: Check if nginx systemd service file exists
       stat:
