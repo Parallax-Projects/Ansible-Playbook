@@ -1,6 +1,7 @@
-- name: Install nginx
+- name: Install and start Nginx on Ubuntu
   hosts: webservers
-  become: true    # THIS IS CRUCIAL
+  become: true
+
   tasks:
     - name: Update apt cache
       apt:
@@ -9,4 +10,10 @@
     - name: Install nginx
       apt:
         name: nginx
-        state: latest
+        state: present
+
+    - name: Ensure nginx is running and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
