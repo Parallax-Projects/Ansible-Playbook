@@ -1,36 +1,39 @@
----
-- name: Install and start Nginx on Ubuntu
-  hosts: webservers
-  become: true
-  gather_facts: true
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
 
-  tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
+- name: Install base packages
+  apt:
+    name:
+      - nginx
+      - ufw
+      - fail2ban
+      - htop
+    state: present
 
-    - name: Reinstall nginx to ensure service files are registered
-      apt:
-        name: nginx
-        state: latest
-        update_cache: yes
+- name: Start and enable NGINX
+  service:
+    name: nginx
+    state: started
+    enabled: yes
 
-    - name: Check if nginx systemd service file exists
-      stat:
-        path: /lib/systemd/system/nginx.service
-      register: nginx_service_file
+- name: Copy index.html
+  copy:
+    src: index.html
+    dest: /var/www/html/index.nginx-debian.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
 
-    - name: Reload systemd daemon (precaution)
-      command: systemctl daemon-reload
-      when: nginx_service_file.stat.exists
+- name: Enable UFW
+  ufw:
+    state: enabled
 
-    - name: Start and enable nginx using systemd
-      systemd:
-        name: nginx
-        state: started
-        enabled: true
-      when: nginx_service_file.stat.exists
-
-    - name: Start nginx manually if systemd unit is missing
-      command: nginx
-      when: not nginx_service_file.stat.exists
+- name: Allow 'OpenSSH' and 'Nginx Full'
+  ufw:
+    rule: allow
+    name: "{{ item }}"
+  loop:
+    - OpenSSH
+    - 'Nginx Full'
