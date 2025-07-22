@@ -1,3 +1,4 @@
+---
 - name: Install and start Nginx on Ubuntu
   hosts: webservers
   become: true
@@ -8,23 +9,29 @@
       apt:
         update_cache: yes
 
-    - name: Install nginx
+    - name: Reinstall nginx to ensure service files are registered
       apt:
         name: nginx
-        state: present
+        state: latest
+        update_cache: yes
+        force: yes
 
-    - name: Check if nginx service exists
+    - name: Check if nginx systemd service file exists
       stat:
         path: /lib/systemd/system/nginx.service
       register: nginx_service_file
 
-    - name: Start and enable nginx with systemd
+    - name: Reload systemd daemon (precaution)
+      command: systemctl daemon-reload
+      when: nginx_service_file.stat.exists
+
+    - name: Start and enable nginx using systemd
       systemd:
         name: nginx
         state: started
         enabled: true
       when: nginx_service_file.stat.exists
 
-    - name: Start nginx manually as fallback
+    - name: Start nginx manually if systemd unit is missing
       command: nginx
       when: not nginx_service_file.stat.exists
