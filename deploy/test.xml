@@ -1,11 +1,19 @@
----
-- name: Install and configure nginx for static website hosting
+- name: Install and configure nginx
   hosts: webservers
-  become: yes   # enables sudo
+  become: true          # important for sudo escalation
 
   tasks:
-    - name: Update apt cache and install nginx
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install nginx
       apt:
         name: nginx
         state: latest
-        update_cache: yes
+
+    - name: Ensure nginx is running
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
