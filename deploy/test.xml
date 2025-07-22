@@ -4,7 +4,7 @@
   become: yes
 
   tasks:
-    - name: Install nginx
+    - name: Update apt cache and install nginx
       apt:
         name: nginx
         state: latest
@@ -15,5 +15,3 @@
         name: nginx
         state: started
         enabled: yes
-  vars:
-    user: "ubuntu"
