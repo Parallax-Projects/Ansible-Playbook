@@ -1,7 +1,6 @@
-- name: Install and configure nginx
+- name: Install nginx
   hosts: webservers
-  become: true
-
+  become: true    # THIS IS CRUCIAL
   tasks:
     - name: Update apt cache
       apt:
@@ -11,9 +10,3 @@
       apt:
         name: nginx
         state: latest
-
-    - name: Ensure nginx is running
-      systemd:
-        name: nginx
-        state: started
-        enabled: true
