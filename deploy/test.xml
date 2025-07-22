@@ -1,4 +1,3 @@
----
 - name: Install and start Nginx on Ubuntu
   hosts: webservers
   become: true
