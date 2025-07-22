@@ -1,17 +1,13 @@
----
-- name: Install and configure nginx for static website hosting
-  hosts: webservers
-  become: yes
-
-  tasks:
-    - name: Update apt cache and install nginx
+--- 
+- name: set up webserver
+  hosts: all
+  tasks: 
+    - name: ensure nginx is at the latest version
       apt:
         name: nginx
         state: latest
-        update_cache: yes
-
-    - name: Ensure nginx is running
-      systemd:
+    - name: start nginx
+      service: 
         name: nginx
         state: started
-        enabled: yes
+        enabled: yes  # if you want to also enable nginx
