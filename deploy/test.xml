@@ -1,13 +1,11 @@
---- 
-- name: set up webserver
-  hosts: all
-  tasks: 
-    - name: ensure nginx is at the latest version
+---
+- name: Install and configure nginx for static website hosting
+  hosts: webservers
+  become: yes   # enables sudo
+
+  tasks:
+    - name: Update apt cache and install nginx
       apt:
         name: nginx
         state: latest
-    - name: start nginx
-      service: 
-        name: nginx
-        state: started
-        enabled: yes  # if you want to also enable nginx
+        update_cache: yes
